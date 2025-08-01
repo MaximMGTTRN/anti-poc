@@ -1,6 +1,6 @@
 import Home from './pages/Home';
+import Login from './pages/Login';
 import Profile from './pages/Profile';
-import { Login } from '@mui/icons-material';
 
 export const routes = [
     {

@@ -1,7 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Suspense } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { CssBaseline, Container, Box, CircularProgress } from '@mui/material';
+import { CssBaseline, Container, Box } from '@mui/material';
 import Header from './components/Header';
 import { routes } from './routes';
 
@@ -25,15 +24,15 @@ function App() {
         <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
           <Header />
           <Container component="main" sx={{ flexGrow: 1, py: 3 }}>
-              <Routes>
-                {routes.map((route) => (
-                  <Route
-                    key={route.path}
-                    path={route.path}
-                    element={<route.component />}
-                  />
-                ))}
-              </Routes>
+            <Routes>
+              {routes.map((route) => (
+                <Route
+                  key={route.path}
+                  path={route.path}
+                  element={<route.component />}
+                />
+              ))}
+            </Routes>
           </Container>
         </Box>
       </Router>
