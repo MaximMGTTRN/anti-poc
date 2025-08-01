@@ -16,6 +16,7 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import axios from 'axios';
+import { useNotification } from '../components/NotificationProvider';
 
 interface FormData {
   firstName: string;
@@ -43,6 +44,8 @@ const Home = () => {
     companyTargetCount: '',
     package: '100'
   });
+
+  const { showNotification } = useNotification();
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -78,15 +81,17 @@ const Home = () => {
     event.preventDefault();
 
     if (!validateForm()) {
+      showNotification('Пожалуйста, заполните все обязательные поля', 'warning');
       return;
     }
 
     setIsLoading(true);
 
     try {
-      sendToManager(formData);
+      await sentToPay(formData);
+      showNotification('Заказ успешно оформлен', 'success');
     } catch (error) {
-      console.error('Ошибка:', error);
+      showNotification('Ошибка при оформлении заказа', 'error');
     } finally {
       setIsLoading(false);
     }
@@ -259,7 +264,7 @@ const Home = () => {
                 variant="contained"
                 size="large"
                 disabled={isLoading}
-                sx={{ py: 1.5 }}
+                sx={{ py: 1.5, mb: 2 }}
               >
                 {isLoading ? 'Обработка...' : 'Оплатить'}
               </Button>
@@ -326,7 +331,7 @@ const Home = () => {
 
 export default Home;
 
-export async function sendToManager(formData: FormData) {
+export async function sentToPay(formData: FormData) {
   const payload = {
     license: {
       features: [],
@@ -421,7 +426,7 @@ export async function sendToManager(formData: FormData) {
 
     return res.data;
   } catch (error) {
-    console.error("Ошибка при отправке в менеджера:", error);
+    console.error("Ошибка при отправке оплаты:", error);
     throw error;
   }
 }

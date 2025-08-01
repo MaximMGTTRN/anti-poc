@@ -9,6 +9,7 @@ import {
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { userData } from '../helpers/mockData';
+import { useNotification } from '../components/NotificationProvider';
 
 const Login = () => {
     const [formData, setFormData] = useState({
@@ -20,7 +21,7 @@ const Login = () => {
     const [authError, setAuthError] = useState<string | null>(null);
 
     const navigate = useNavigate();
-
+    const { showNotification } = useNotification();
     useEffect(() => {
         const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
         const currentUser = localStorage.getItem('currentUser');
@@ -80,8 +81,10 @@ const Login = () => {
                 localStorage.setItem('isAuthenticated', 'true');
 
                 navigate('/profile');
+                showNotification('Вход выполнен успешно', 'success');
             } else {
                 setAuthError('Неверный логин или пароль');
+                showNotification('Неверный логин или пароль', 'error');
             }
 
         } catch (error) {

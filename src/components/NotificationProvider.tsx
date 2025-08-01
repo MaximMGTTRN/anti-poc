@@ -45,6 +45,12 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
         };
 
         setNotifications(prev => [...prev, newNotification]);
+
+        if (autoHideDuration > 0) {
+            setTimeout(() => {
+                handleClose(id);
+            }, autoHideDuration);
+        }
     };
 
     const handleClose = (id: string) => {
@@ -60,13 +66,14 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
                     open={true}
                     autoHideDuration={notification.autoHideDuration}
                     onClose={() => handleClose(notification.id)}
-                    anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                    sx={{ zIndex: 9999 }}
                 >
                     <Alert
                         onClose={() => handleClose(notification.id)}
                         severity={notification.severity}
                         variant="filled"
-                        sx={{ width: '100%' }}
+                        sx={{ width: '100%', zIndex: 10000 }}
                     >
                         {notification.message}
                     </Alert>
