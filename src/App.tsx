@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline, Container, Box } from '@mui/material';
 import Header from './components/Header';
+import ProtectedRoute from './components/ProtectedRoute';
 import { routes } from './routes';
 
 const theme = createTheme({
@@ -29,7 +30,15 @@ function App() {
                 <Route
                   key={route.path}
                   path={route.path}
-                  element={<route.component />}
+                  element={
+                    route.path === '/profile' ? (
+                      <ProtectedRoute>
+                        <route.component />
+                      </ProtectedRoute>
+                    ) : (
+                      <route.component />
+                    )
+                  }
                 />
               ))}
             </Routes>
