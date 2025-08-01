@@ -8,7 +8,8 @@ const Header = () => {
     const navigate = useNavigate();
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    useEffect(() => {
+
+    const checkAuth = () => {
         const auth = localStorage.getItem('isAuthenticated') === 'true';
         const userStr = localStorage.getItem('currentUser');
 
@@ -24,7 +25,19 @@ const Header = () => {
                 setIsAuthenticated(false);
                 setCurrentUser(null);
             }
+        } else {
+            setCurrentUser(null);
         }
+    };
+
+    useEffect(() => {
+        checkAuth();
+
+        const interval = setInterval(checkAuth,
+
+        );
+
+        return () => clearInterval(interval);
     }, []);
 
     const handleLogout = () => {

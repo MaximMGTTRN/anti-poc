@@ -7,35 +7,22 @@ import {
   Chip,
   Paper,
   Button,
-  TextField,
-  Alert,
   Stack,
   CircularProgress
 } from '@mui/material';
 import {
-  Person as PersonIcon,
-  Business as BusinessIcon,
-  Security as SecurityIcon,
-  Edit as EditIcon,
-  Save as SaveIcon,
-  Cancel as CancelIcon
+  Security as SecurityIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import type { User } from './types';
+import { useNotification } from '../../components/NotificationProvider';
 
 const Profile: React.FC = () => {
-  const [isEditing, setIsEditing] = useState(false);
   const [userData, setUserData] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [formData, setFormData] = useState({
-    firstName: '',
-    familyName: '',
-    email: '',
-    phone: '',
-    companyName: ''
-  });
 
   const navigate = useNavigate();
+  const { showNotification } = useNotification();
 
   useEffect(() => {
     const checkAuthAndLoadData = () => {
@@ -50,13 +37,6 @@ const Profile: React.FC = () => {
       try {
         const currentUser: User = JSON.parse(currentUserStr);
         setUserData(currentUser);
-        setFormData({
-          firstName: currentUser.firstName,
-          familyName: currentUser.familyName,
-          email: currentUser.email,
-          phone: currentUser.phone,
-          companyName: currentUser.companyName
-        });
       } catch (error) {
         console.error('Ошибка при парсинге данных пользователя:', error);
         localStorage.removeItem('currentUser');
@@ -70,43 +50,10 @@ const Profile: React.FC = () => {
     checkAuthAndLoadData();
   }, [navigate]);
 
-  const handleChange = (field: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: event.target.value
-    }));
-  };
-
-  const handleSave = () => {
-    if (userData) {
-      const updatedUserData = {
-        ...userData,
-        ...formData,
-        fullName: `${formData.firstName} ${formData.familyName}`
-      };
-
-      localStorage.setItem('currentUser', JSON.stringify(updatedUserData));
-      setUserData(updatedUserData);
-    }
-    setIsEditing(false);
-  };
-
-  const handleCancel = () => {
-    if (userData) {
-      setFormData({
-        firstName: userData.firstName,
-        familyName: userData.familyName,
-        email: userData.email,
-        phone: userData.phone,
-        companyName: userData.companyName
-      });
-    }
-    setIsEditing(false);
-  };
-
   const handleLogout = () => {
     localStorage.removeItem('currentUser');
     localStorage.removeItem('isAuthenticated');
+    showNotification('Вы успешно вышли из системы', 'info');
     navigate('/login');
   };
 
@@ -143,24 +90,9 @@ const Profile: React.FC = () => {
       <Box sx={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
         <Box sx={{ flex: '1 1 500px', minWidth: 0 }}>
           <Paper sx={{ p: 3, mb: 3 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-              <Typography variant="h5" gutterBottom>
-                Профиль пользователя
-              </Typography>
-              <Button
-                variant={isEditing ? "contained" : "outlined"}
-                startIcon={isEditing ? <SaveIcon /> : <EditIcon />}
-                onClick={isEditing ? handleSave : () => setIsEditing(true)}
-              >
-                {isEditing ? 'Сохранить' : 'Редактировать'}
-              </Button>
-            </Box>
-
-            {isEditing && (
-              <Alert severity="info" sx={{ mb: 3 }}>
-                Режим редактирования. Внесите изменения и нажмите "Сохранить".
-              </Alert>
-            )}
+            <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
+              Профиль пользователя
+            </Typography>
 
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
               <Avatar
@@ -184,65 +116,52 @@ const Profile: React.FC = () => {
 
             <Divider sx={{ my: 3 }} />
 
-            <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
-              <TextField
-                sx={{ flex: '1 1 200px', minWidth: 0 }}
-                label="Имя"
-                value={formData.firstName}
-                onChange={handleChange('firstName')}
-                disabled={!isEditing}
-                fullWidth
-              />
-              <TextField
-                sx={{ flex: '1 1 200px', minWidth: 0 }}
-                label="Фамилия"
-                value={formData.familyName}
-                onChange={handleChange('familyName')}
-                disabled={!isEditing}
-                fullWidth
-              />
-            </Box>
-
-            <Box sx={{ mb: 3 }}>
-              <TextField
-                fullWidth
-                label="Email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange('email')}
-                disabled={!isEditing}
-                sx={{ mb: 2 }}
-              />
-              <TextField
-                fullWidth
-                label="Телефон"
-                value={formData.phone}
-                onChange={handleChange('phone')}
-                disabled={!isEditing}
-              />
-            </Box>
-
-            <Box sx={{ mb: 3 }}>
-              <TextField
-                fullWidth
-                label="Название компании"
-                value={formData.companyName}
-                onChange={handleChange('companyName')}
-                disabled={!isEditing}
-              />
-            </Box>
-
-            {isEditing && (
-              <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
-                <Button
-                  variant="outlined"
-                  startIcon={<CancelIcon />}
-                  onClick={handleCancel}
-                >
-                  Отмена
-                </Button>
+            <Stack spacing={3}>
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                  Имя
+                </Typography>
+                <Typography variant="body1">
+                  {userData.firstName}
+                </Typography>
               </Box>
-            )}
+
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                  Фамилия
+                </Typography>
+                <Typography variant="body1">
+                  {userData.familyName}
+                </Typography>
+              </Box>
+
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                  Email
+                </Typography>
+                <Typography variant="body1">
+                  {userData.email}
+                </Typography>
+              </Box>
+
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                  Телефон
+                </Typography>
+                <Typography variant="body1">
+                  {userData.phone}
+                </Typography>
+              </Box>
+
+              <Box>
+                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                  Название компании
+                </Typography>
+                <Typography variant="body1">
+                  {userData.companyName}
+                </Typography>
+              </Box>
+            </Stack>
           </Paper>
         </Box>
 
