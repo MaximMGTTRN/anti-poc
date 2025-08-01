@@ -1,12 +1,18 @@
 import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { routes } from '../routes';
 
 const Header = () => {
+    const navigate = useNavigate();
     return (
         <AppBar position="static" sx={{ backgroundColor: '#1976d2' }}>
             <Toolbar>
-                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                <Typography
+                    variant="h6"
+                    component="div"
+                    sx={{ flexGrow: 1, cursor: 'pointer'}}
+                    onClick={() => navigate('/')}
+                >
                     ПРИЛОЖЕНИЕ
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 2 }}>
